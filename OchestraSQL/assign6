@@ -1,0 +1,220 @@
+mysql> #Alex Danilushkin
+mysql> #z1809166
+mysql> #section 4
+mysql> 
+mysql> Create Table Instrument( intst_id int NOT NULL PRIMARY KEY AUTO_INCREMENT, Type varchar(15), MakerName varchar(15), Year varchar(4) );
+Query OK, 0 rows affected (0.09 sec)
+
+mysql> \t
+mysql> 
+mysql> 
+mysql> #creating player table
+mysql> Create Table player( player_id int AUTO_INCREMENT NOT NULL PRIMARY KEY, LastName varchar(15), FirstName varchar(15), Salary int unsigned, Check (Salary < 65000) );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> \t
+mysql> #creating plays table
+mysql> 
+mysql> Create Table plays( player_id int NOT NULL, Intst_id int NOT NULL, FOREIGN KEY (player_id) REFERENCES player(player_id), FOREIGN KEY (Intst_id) REFERENCES Instrument(Intst_id) );
+Query OK, 0 rows affected (0.17 sec)
+
+mysql> \t
+mysql> #I had altered the Year to int(4) so that way it was an integer that holds 4 digits
+mysql> #it seemed more specific to the problem
+mysql> #Adding rows to tables
+mysql> 
+mysql> 
+mysql> insert into Instrument
+    -> values(1, 'Flute', 'Farmers', 1995);
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into Instrument
+    -> Values('Gutiar', 'Ibanez', 2010);
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> insert into Instrument (intst_id) Values('Gutiar', 'Ibanez', 2010);
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> insert into Instrument (intst_id) Values ('Gutiar'), ('Ibanez'), (2010);
+Query OK, 3 rows affected, 2 warnings (0.03 sec)
+Records: 3  Duplicates: 0  Warnings: 2
+
+mysql> \t
+mysql> insert into Instrument (Type, MakerName, Year) Values ('Guitar', 'Ibanez', 2010), ('Bagpipes', 'Scotties', 2017), ('Drums', 'Pearl', 2015), ('Harp', 'Ochella', 2012);
+Query OK, 4 rows affected (0.04 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> #Showing all rows for this table Q4
+mysql> Select * From Instrument;
++----------+----------+-----------+------+
+| intst_id | Type     | MakerName | Year |
++----------+----------+-----------+------+
+|        1 | Flute    | Farmers   | 1995 |
+|     2011 | Guitar   | Ibanez    | 2010 |
+|     2012 | Bagpipes | Scotties  | 2017 |
+|     2013 | Drums    | Pearl     | 2015 |
+|     2014 | Harp     | Ochella   | 2012 |
++----------+----------+-----------+------+
+5 rows in set (0.00 sec)
+
+mysql> desc player;
++-----------+------------------+------+-----+---------+----------------+
+| Field     | Type             | Null | Key | Default | Extra          |
++-----------+------------------+------+-----+---------+----------------+
+| player_id | int(11)          | NO   | PRI | NULL    | auto_increment |
+| LastName  | varchar(15)      | YES  |     | NULL    |                |
+| FirstName | varchar(15)      | YES  |     | NULL    |                |
+| Salary    | int(10) unsigned | YES  |     | NULL    |                |
++-----------+------------------+------+-----+---------+----------------+
+4 rows in set (0.00 sec)
+
+mysql> insert into player (LastName, FirstName, Salary) Values ('Peters', 'Chris', 12000), ('Vanderhall', 'Bohem', 12050), ('Smith', 'Mary', 130001), ('YuHamn', 'Zonglin', 4), ('Ashely', 'Ashely', 65000);
+Query OK, 5 rows affected (0.04 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> #Showing rows for player
+mysql> select * From player;
++-----------+------------+-----------+--------+
+| player_id | LastName   | FirstName | Salary |
++-----------+------------+-----------+--------+
+|         1 | Peters     | Chris     |  12000 |
+|         2 | Vanderhall | Bohem     |  12050 |
+|         3 | Smith      | Mary      | 130001 |
+|         4 | YuHamn     | Zonglin   |      4 |
+|         5 | Ashely     | Ashely    |  65000 |
++-----------+------------+-----------+--------+
+5 rows in set (0.00 sec)
+
+mysql> desc plays;
++-----------+---------+------+-----+---------+-------+
+| Field     | Type    | Null | Key | Default | Extra |
++-----------+---------+------+-----+---------+-------+
+| player_id | int(11) | NO   | MUL | NULL    |       |
+| Intst_id  | int(11) | NO   | MUL | NULL    |       |
++-----------+---------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> insert into plays (player_id, Intst_id) Values (1, 1), (1,2011), (1, 2012) , (2, 2011) , (3, 2013) , (4, 2012) , (5 , 2014);
+Query OK, 7 rows affected (0.07 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+mysql> select * From plays;
++-----------+----------+
+| player_id | Intst_id |
++-----------+----------+
+|         1 |        1 |
+|         1 |     2011 |
+|         1 |     2012 |
+|         2 |     2011 |
+|         3 |     2013 |
+|         4 |     2012 |
+|         5 |     2014 |
++-----------+----------+
+7 rows in set (0.00 sec)
+
+mysql> alter table player
+    -> Add column start-date int(4) Default 2010;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '-date int(4) Default 2010' at line 2
+mysql> alter table player Add column start_date int(4) Default 2010;
+Query OK, 5 rows affected (0.13 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> #q6 show rows
+mysql> Select * From player;
++-----------+------------+-----------+--------+------------+
+| player_id | LastName   | FirstName | Salary | start_date |
++-----------+------------+-----------+--------+------------+
+|         1 | Peters     | Chris     |  12000 |       2010 |
+|         2 | Vanderhall | Bohem     |  12050 |       2010 |
+|         3 | Smith      | Mary      | 130001 |       2010 |
+|         4 | YuHamn     | Zonglin   |      4 |       2010 |
+|         5 | Ashely     | Ashely    |  65000 |       2010 |
++-----------+------------+-----------+--------+------------+
+5 rows in set (0.00 sec)
+
+mysql> #updating 2 columns
+mysql> Update player
+    -> Set start_date = 2015
+    -> Where LastName = 'Peters' || LastName = 'Ashely';
+Query OK, 2 rows affected (0.06 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+mysql> #Q8 showing change
+mysql> Select * From player;
++-----------+------------+-----------+--------+------------+
+| player_id | LastName   | FirstName | Salary | start_date |
++-----------+------------+-----------+--------+------------+
+|         1 | Peters     | Chris     |  12000 |       2015 |
+|         2 | Vanderhall | Bohem     |  12050 |       2010 |
+|         3 | Smith      | Mary      | 130001 |       2010 |
+|         4 | YuHamn     | Zonglin   |      4 |       2010 |
+|         5 | Ashely     | Ashely    |  65000 |       2015 |
++-----------+------------+-----------+--------+------------+
+5 rows in set (0.00 sec)
+
+mysql> #Q9 remove a row. We're getting rid of Smith, she costs too much
+mysql> Delete From player
+    -> Where LastName = 'Smith';
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`z1809166`.`plays`, CONSTRAINT `plays_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `player` (`player_id`))
+mysql> Delete From plays
+    -> Where player_id = 3;
+Query OK, 1 row affected (0.04 sec)
+
+mysql> Delete From player Where LastName = 'Smith';
+Query OK, 1 row affected (0.02 sec)
+
+mysql> Select * From player;
++-----------+------------+-----------+--------+------------+
+| player_id | LastName   | FirstName | Salary | start_date |
++-----------+------------+-----------+--------+------------+
+|         1 | Peters     | Chris     |  12000 |       2015 |
+|         2 | Vanderhall | Bohem     |  12050 |       2010 |
+|         4 | YuHamn     | Zonglin   |      4 |       2010 |
+|         5 | Ashely     | Ashely    |  65000 |       2015 |
++-----------+------------+-----------+--------+------------+
+4 rows in set (0.00 sec)
+
+mysql> Select * From plays;
++-----------+----------+
+| player_id | Intst_id |
++-----------+----------+
+|         1 |        1 |
+|         1 |     2011 |
+|         1 |     2012 |
+|         2 |     2011 |
+|         4 |     2012 |
+|         5 |     2014 |
++-----------+----------+
+6 rows in set (0.00 sec)
+
+mysql> Desc plays;
++-----------+---------+------+-----+---------+-------+
+| Field     | Type    | Null | Key | Default | Extra |
++-----------+---------+------+-----+---------+-------+
+| player_id | int(11) | NO   | MUL | NULL    |       |
+| Intst_id  | int(11) | NO   | MUL | NULL    |       |
++-----------+---------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> Desc player;
++------------+------------------+------+-----+---------+----------------+
+| Field      | Type             | Null | Key | Default | Extra          |
++------------+------------------+------+-----+---------+----------------+
+| player_id  | int(11)          | NO   | PRI | NULL    | auto_increment |
+| LastName   | varchar(15)      | YES  |     | NULL    |                |
+| FirstName  | varchar(15)      | YES  |     | NULL    |                |
+| Salary     | int(10) unsigned | YES  |     | NULL    |                |
+| start_date | int(4)           | YES  |     | 2010    |                |
++------------+------------------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> desc Instrument;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| intst_id  | int(11)     | NO   | PRI | NULL    | auto_increment |
+| Type      | varchar(15) | YES  |     | NULL    |                |
+| MakerName | varchar(15) | YES  |     | NULL    |                |
+| Year      | int(4)      | YES  |     | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+4 rows in set (0.00 sec)
+
+mysql> \t
